@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "fs": "^0.0.1-security",
+    "multer": "^2.0.2"
+  },
+  "type": "module"
+}
