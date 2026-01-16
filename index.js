@@ -56,6 +56,33 @@ app.get('/api/images', async (req, res) => {
   }
 });
 
+app.post('/api/delete', express.json(), async (req, res) => {
+  try {
+    const user_id = req.headers["x-user-id"];
+
+    if (!user_id) return res.status(401).send("No user");
+
+    const { img_id } = req.body;
+
+    if (!img_id) return res.status(400).send("No img_id");
+
+    const profiles = await loadProfiles();
+
+    if (!profiles[user_id]) return res.status(404).send("No profile");
+
+    profiles[user_id].images = profiles[user_id].images.filter(img => img.img_id !== img_id);
+    
+    await saveProfiles(profiles);
+    await fs.unlink(path.join(__dirname, 'uploads', img_id + '.png'));
+    res.json({ ok: true });
+
+  } catch (err) {
+
+    console.error(err);
+    res.status(500).send("Delete error");
+  }
+});
+
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
     const user_id = req.headers["x-user-id"];

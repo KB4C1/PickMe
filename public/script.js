@@ -59,7 +59,7 @@ async function loadImages() {
     gallery.innerHTML = "";
 
     if (images.length === 0) {
-      gallery.innerHTML = "<p>No images uploaded yet.</p>";
+      gallery.innerHTML = `<p style="font-size: 24px;">No images uploaded yet.</p>`;
       return;
     }
 
@@ -77,7 +77,29 @@ async function loadImages() {
       input.readOnly = true;
       input.className = "img-url";
 
+      const deleteBtn = document.createElement("button");
+
+      deleteBtn.textContent = "Delete";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.addEventListener("click", async () => {
+        try {
+          await fetch("/api/delete", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-user-id": userId
+            },
+            body: JSON.stringify({ img_id: img.img_id })
+          });
+          imgCard.remove();
+
+        } catch (err) {
+          console.error(err);
+        }
+      });
+
       const copyBtn = document.createElement("button");
+      
       copyBtn.textContent = "Copy URL";
       copyBtn.className = "copy-btn";
       copyBtn.addEventListener("click", async () => {
@@ -93,6 +115,7 @@ async function loadImages() {
       imgCard.appendChild(el);
       imgCard.appendChild(input);
       imgCard.appendChild(copyBtn);
+      imgCard.appendChild(deleteBtn);
       gallery.appendChild(imgCard);
     });
 
